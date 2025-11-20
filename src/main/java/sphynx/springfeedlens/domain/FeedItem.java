@@ -3,7 +3,6 @@ package sphynx.springfeedlens.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Getter

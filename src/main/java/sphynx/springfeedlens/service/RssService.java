@@ -3,10 +3,10 @@ package sphynx.springfeedlens.service;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sphynx.springfeedlens.config.RssProperties;
 import sphynx.springfeedlens.domain.FeedItem;
@@ -25,7 +25,7 @@ public class RssService {
     private final FeedRepository feedRepository;
     private final FeedMapper feedMapper;
 
-
+    @Scheduled(fixedRate = 10000)
     public void   fetchAndSaveFeeds() {
 
         List<FeedItem> feeds = new ArrayList<>();
