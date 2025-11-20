@@ -6,4 +6,5 @@ import sphynx.springfeedlens.domain.FeedItem;
 
 @Repository
 public interface FeedRepository extends JpaRepository<FeedItem,Long> {
+    boolean existsByLink(String link);
 }

@@ -4,11 +4,12 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.net.URL;
 import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "rss")
 @Getter
 public class RssProperties {
-    private List<String> urls;
+    private List<URL> urls;
 }
