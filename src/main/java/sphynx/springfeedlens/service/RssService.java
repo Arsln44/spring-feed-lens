@@ -6,6 +6,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sphynx.springfeedlens.config.RssProperties;
@@ -25,33 +26,37 @@ public class RssService {
     private final FeedRepository feedRepository;
     private final FeedMapper feedMapper;
 
-    @Scheduled(fixedRate = 10000)
-    public void   fetchAndSaveFeeds() {
-
-        List<FeedItem> feeds = new ArrayList<>();
-
+    @Scheduled(fixedRate = 600000)
+    public void fetchAndSaveFeeds() {
         List<URL> urls = rssProperties.getUrls();
         SyndFeedInput input = new SyndFeedInput();
 
-        for  (URL url : urls) {
+        for (URL url : urls) {
             try {
+
                 SyndFeed feed = input.build(new XmlReader(url));
                 List<SyndEntry> entries = feed.getEntries();
+
                 for (SyndEntry entry : entries) {
-                    if (!feedRepository.existsByLink(entry.getLink())) {
-                        FeedItem feedItem = feedMapper.rssToFeedItem(entry,feed);
-                        feeds.add(feedItem);
-                    }
+                    processAndSaveItem(entry, feed);
                 }
-                if (!feeds.isEmpty()) {
-                    feedRepository.saveAll(feeds);
-                    feeds.clear();
-                }
+            } catch (Exception e) {
+                System.err.println("Hata: " + url + " adresi okunamadı. " + e.getMessage());
             }
-            catch (Exception e) {
-                System.err.println("Hata "+url+" adresi okunamadı");
-                e.printStackTrace();
+        }
+    }
+
+    private void processAndSaveItem(SyndEntry entry, SyndFeed feed) {
+        try {
+
+            FeedItem feedItem = feedMapper.rssToFeedItem(entry, feed);
+
+            if (!feedRepository.existsByLink(feedItem.getLink())) {
+                feedRepository.save(feedItem);
             }
+        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
+            System.err.println("Kayıt hatası: " + e.getMessage());
         }
     }
 }
