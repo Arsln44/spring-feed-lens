@@ -21,7 +21,7 @@ public class FeedItem {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(unique = true, nullable = false)
